@@ -351,7 +351,7 @@ def download_images(query, output_dir, max_num=10):
     Download a specific number of images for a product with a preference for white backgrounds.
     """
     google_crawler = GoogleImageCrawler(storage={'root_dir': output_dir})
-    filtered_query = f"{query} on white background"
+    filtered_query = f"{query} on white or transparent background"
     google_crawler.crawl(keyword=filtered_query, max_num=max_num)
 
 def resize_and_center_image(input_path, output_path):
