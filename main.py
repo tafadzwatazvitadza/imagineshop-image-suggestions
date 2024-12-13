@@ -11,6 +11,8 @@ from flask_sqlalchemy import SQLAlchemy
 from icrawler.builtin import GoogleImageCrawler
 
 from dotenv import load_dotenv
+from sqlalchemy import or_
+
 load_dotenv()
 
 MEDUSA_API_URL = os.getenv('MEDUSA_API_URL')
@@ -96,9 +98,15 @@ def fetch_shop_products():
 
 def get_product_from_db():
     """
-    Retrieve the next pending product from the database.
+    Retrieve the next product that is either pending or processing.
+    Prioritize pending products first, followed by processing.
     """
-    return ProductProgress.query.filter_by(status='pending').order_by(ProductProgress.id.asc()).first()
+    return (
+        ProductProgress.query
+        .filter(or_(ProductProgress.status == 'pending', ProductProgress.status == 'processing'))
+        .order_by(ProductProgress.id.asc())
+        .first()
+    )
 
 @app.route("/load_products", methods=["GET", "POST"])
 def load_products():
