@@ -62,7 +62,7 @@ app = Flask(__name__)
 app.secret_key = 'secret_key'  # Necessary for form submission, even if not using session state.
 
 # Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///myapp.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
