@@ -85,16 +85,31 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def fetch_shop_products():
     """
-    Fetch products from the Medusa store.
+    Fetch all products from the Medusa store using pagination.
     """
     headers = {"x-publishable-api-key": PUBLISHABLE_KEY}
-    try:
-        response = requests.get(MEDUSA_API_URL, headers=headers)
-        response.raise_for_status()
-        return response.json().get("products", [])
-    except requests.RequestException as e:
-        print(f"Error fetching shop products: {e}")
-        return []
+    products = []
+    offset = 0
+    limit = 50  # Medusa's default or maximum batch size
+
+    while True:
+        url = f"{MEDUSA_API_URL}?offset={offset}&limit={limit}"
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            batch = response.json().get("products", [])
+            if not batch:
+                # No more products to fetch
+                break
+            products.extend(batch)
+            offset += limit  # Move to the next batch
+        except requests.RequestException as e:
+            logger.error(f"Error fetching products: {e}")
+            break
+
+    logger.debug(f"Total products fetched: {len(products)}")
+    return products
+
 
 def get_product_from_db():
     """
