@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Current Images</title>
+</head>
+<body>
+    <h1>Current Images for {{ product.title }}</h1>
+    <p>Product ID: {{ product.id }}</p>
+    <h2>Existing Images:</h2>
+    <div style="display: flex; flex-wrap: wrap;">
+        {% for img in existing_images %}
+            <div style="margin: 10px;">
+                <img src="{{ img.url }}" alt="Existing Image" style="max-width: 200px; max-height: 200px;"/>
+            </div>
+        {% endfor %}
+    </div>
+
+    <p>Do you want to update these images or skip this product?</p>
+    <form action="{{ url_for('change_images') }}" method="post">
+        <button type="submit" name="decision" value="yes">Yes, Change Images</button>
+        <button type="submit" name="decision" value="no">No, Skip</button>
+    </form>
+</body>
+</html>

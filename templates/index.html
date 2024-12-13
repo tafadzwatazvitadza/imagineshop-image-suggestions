@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Processed</title>
+</head>
+<body>
+    <h1>All products processed! Thank you.</h1>
+    <form action="{{ url_for('load_products') }}" method="GET">
+        <button type="submit">Load More Products</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Validate Product Images</title>
+    <!-- Tailwind CSS CDN (example) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="max-w-5xl mx-auto py-10 px-4">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">Validate Images for: {{ product['title'] }}</h1>
+        <form method="POST" action="{{ url_for('validate') }}">
+            <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                {% for image in images %}
+                <div>
+                <div class="bg-white rounded-lg shadow p-4 flex flex-col items-center">
+                    <img
+                        class="rounded mb-4 w-full object-cover h-40"
+                        src="{{ url_for('static', filename='product_images/' + product['title'].replace(' ', '_').lower() + '/' + image) }}"
+                        alt="Image"
+                    >
+                </div>
+                 <label class="inline-flex items-center space-x-2 text-sm text-gray-600">
+                        <input type="checkbox" name="images" value="{{ image }}" class="form-checkbox text-blue-600 h-4 w-4">
+                        <span>Select</span>
+                    </label>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="mt-8">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    Submit
+                </button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

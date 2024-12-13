@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Current Product Images</title>
+</head>
+<body>
+    <h1>Current Images for: {{ product['title'] }}</h1>
+    {% if existing_images %}
+        <p>These are the current images for this product:</p>
+        {% for image in existing_images %}
+        <img src="{{ image.url }}" alt="Current Image" width="150">
+        {% endfor %}
+    {% else %}
+        <p>No images are currently set for this product.</p>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('change_images') }}">
+        <p>Do you want to change / add images?</p>
+        <button type="submit" name="decision" value="yes">Yes</button>
+        <button type="submit" name="decision" value="no">No</button>
+    </form>
+</body>
+</html>

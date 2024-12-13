@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Validate Images</title>
+</head>
+<body>
+    <h1>Validate Images for {{ product.title }}</h1>
+    <p>Product ID: {{ product.id }}</p>
+    <p>Select the images you want to keep and continue:</p>
+    <form action="{{ url_for('validate') }}" method="post">
+        <div style="display: flex; flex-wrap: wrap;">
+            {% for image in images %}
+                <div style="margin: 10px; text-align:center;">
+                    <img src="{{ url_for('static', filename='product_images/' + product.title.replace(' ', '_')|lower + '/' + image) }}"
+                         alt="Downloaded Image"
+                         style="max-width: 200px; max-height: 200px; display:block; margin-bottom:10px;"/>
+                    <input type="checkbox" name="images" value="{{ image }}">
+                </div>
+            {% endfor %}
+        </div>
+        <button type="submit">Keep Selected Images</button>
+    </form>
+</body>
+</html>

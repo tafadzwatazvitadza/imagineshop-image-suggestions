@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>New Images Set</title>
+</head>
+<body>
+    <h1>New Images for {{ product.title }}</h1>
+    <p>Product ID: {{ product.id }}</p>
+    <p>Please select one of these images as the thumbnail:</p>
+    <form action="{{ url_for('set_thumbnail') }}" method="post">
+        <div style="display: flex; flex-wrap: wrap;">
+            {% for img in processed_images %}
+                <div style="margin: 10px; text-align:center;">
+                    <img src="{{ url_for('static', filename='product_images/' + product.title.replace(' ', '_')|lower + '/' + img) }}"
+                         alt="Processed Image"
+                         style="max-width: 200px; max-height: 200px; display:block; margin-bottom:10px;"/>
+                    <input type="radio" name="thumbnail" value="{{ img }}" {% if loop.first %}checked{% endif %}>
+                    <label>Set as Thumbnail</label>
+                </div>
+            {% endfor %}
+        </div>
+        <button type="submit">Set Thumbnail &amp; Finish</button>
+    </form>
+</body>
+</html>
