@@ -1,26 +1,160 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Validate Images</title>
-</head>
-<body>
-    <h1>Validate Images for {{ product.title }}</h1>
-    <p>Product ID: {{ product.id }}</p>
-    <p>Select the images you want to keep and continue:</p>
-    <form action="{{ url_for('validate') }}" method="post">
-        <div style="display: flex; flex-wrap: wrap;">
-            {% for image in images %}
-                <div style="margin: 10px; text-align:center;">
-                    <img src="{{ url_for('static', filename='product_images/' + product.title.replace(' ', '_')|lower + '/' + image) }}"
-                         alt="Downloaded Image"
-                         style="max-width: 200px; max-height: 200px; display:block; margin-bottom:10px;"/>
-                    <input type="checkbox" name="images" value="{{ image }}">
-                </div>
-            {% endfor %}
+{% extends "base.html" %}
+
+{% block title %}
+Validate Images for {{ product.title }}
+{% endblock %}
+
+{% block content %}
+<h1 class="text-1xl font-bold text-gray-900 mb-4">Select Images</h1>
+<h1 class="text-2xl font-bold text-gray-900 mb-4">{{ product.title }}</h1>
+<p class="text-sm text-gray-700 mb-4">Product ID: {{ product.id }}</p>
+<p class="text-sm text-gray-700 mb-6">Select the images you want to keep and continue:</p>
+
+<!-- Current Product Images -->
+<div>
+  <h2 class="text-xl font-semibold text-gray-900 mb-2">Current Product Images</h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    {% for image in current_product_images %}
+      <div class="border border-gray-200 rounded p-4 text-center">
+        <img src="{{ image.url }}" alt="Current Product Image" class="mx-auto mb-2 max-h-48 object-contain">
+        <p class="text-sm text-gray-700 mb-2">
+          Dimensions: {{ image.width or 'N/A' }}x{{ image.height or 'N/A' }} -
+          <span class="{{ 'text-green-600' if image.status == 'green' else 'text-red-600' }}">
+            {{ 'Valid' if image.status == 'green' else 'Invalid' }}
+          </span>
+        </p>
+        <input type="checkbox" name="images" value="{{ image.url }}"
+               class="rounded text-indigo-600 focus:ring-indigo-500"
+               onchange="handleCheckboxChange(this, '{{ image.url }}')">
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Google Images -->
+<div class="mt-8">
+  <h2 class="text-xl font-semibold text-gray-900 mb-2">Google Images</h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    {% for image in google_images %}
+      <div class="border border-gray-200 rounded p-4 text-center">
+        <img src="{{ url_for('static', filename='product_images/' + product.title.replace(' ', '_')|lower + '/' + image.name) }}"
+             alt="Google Image" class="mx-auto mb-2 max-h-48 object-contain">
+        <p class="text-sm text-gray-700 mb-2">
+          Dimensions: {{ image.width }}x{{ image.height }} -
+          <span class="{{ 'text-green-600' if image.status == 'green' else 'text-red-600' }}">
+            {{ 'Valid' if image.status == 'green' else 'Invalid' }}
+          </span>
+        </p>
+        <input type="checkbox" name="images" value="{{ image.name }}"
+               class="rounded text-indigo-600 focus:ring-indigo-500"
+               onchange="handleCheckboxChange(this, '{{ url_for('static', filename='product_images/' + product.title.replace(' ', '_')|lower + '/' + image.name) }}')">
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- E-commerce Images -->
+<div class="mt-8">
+  <h2 class="text-xl font-semibold text-gray-900 mb-2">E-commerce Images</h2>
+  {% for site, images in ecommerce_images.items() %}
+    <h3 class="text-lg font-medium text-gray-800 mb-2">{{ site }}</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+      {% for image in images %}
+        <div class="border border-gray-200 rounded p-4 text-center">
+          <img src="{{ url_for('static', filename='product_images/' + product.title.replace(' ', '_')|lower + '/' + site.replace('.', '_') + '/' + image.name) }}"
+               alt="E-commerce Image" class="mx-auto mb-2 max-h-48 object-contain">
+          <p class="text-sm text-gray-700 mb-2">
+            Dimensions: {{ image.width }}x{{ image.height }} -
+            <span class="{{ 'text-green-600' if image.status == 'green' else 'text-red-600' }}">
+              {{ 'Valid' if image.status == 'green' else 'Invalid' }}
+            </span>
+          </p>
+          <input type="checkbox" name="images" value="{{ image.name }}"
+                 class="rounded text-indigo-600 focus:ring-indigo-500"
+                 onchange="handleCheckboxChange(this, '{{ url_for('static', filename='product_images/' + product.title.replace(' ', '_')|lower + '/' + site.replace('.', '_') + '/' + image.name) }}')">
         </div>
-        <button type="submit">Keep Selected Images</button>
-    </form>
-</body>
-</html>
+      {% endfor %}
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% block right_sidebar %}
+<h2 class="text-lg font-semibold text-gray-900 mb-4">Selected Images</h2>
+<!-- Form for submission in the sidebar -->
+<form id="selected-form" action="{{ url_for('validate') }}" method="post" class="flex flex-col space-y-4">
+  <div id="selected-images" class="flex flex-col gap-4">
+    <!-- Dynamically updated selected images cards and hidden inputs -->
+  </div>
+  <button type="submit"
+          class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+    Keep Selected Images
+  </button>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const selectedImagesContainer = document.getElementById("selected-images");
+  const selectedForm = document.getElementById("selected-form");
+
+  function handleCheckboxChange(checkbox, imageUrl) {
+    if (checkbox.checked) {
+      addImage(imageUrl, checkbox.value);
+    } else {
+      removeImage(imageUrl);
+    }
+  }
+
+  function addImage(imageUrl, imageValue) {
+    // Avoid duplicates
+    if (document.querySelector(`[data-url="${imageUrl}"]`)) return;
+
+    // Create card container
+    const card = document.createElement("div");
+    card.className = "relative border border-gray-200 rounded shadow bg-white p-2";
+    card.dataset.url = imageUrl;
+
+    // Remove button (icon)
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "absolute top-2 right-2 text-gray-500 hover:text-red-600";
+    removeBtn.onclick = () => {
+      // Uncheck the corresponding checkbox
+      const checkbox = document.querySelector(`input[type="checkbox"][value="${imageValue}"]`);
+      if (checkbox) checkbox.checked = false;
+      removeImage(imageUrl);
+    };
+    removeBtn.innerHTML = `
+      <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5"
+           viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    `;
+
+    // Image element
+    const img = document.createElement("img");
+    img.src = imageUrl;
+    img.alt = "Selected Image";
+    img.className = "w-full h-20 object-contain mb-2";
+
+    // Hidden input to submit
+    const hiddenInput = document.createElement("input");
+    hiddenInput.type = "hidden";
+    hiddenInput.name = "images";
+    hiddenInput.value = imageValue;
+    hiddenInput.dataset.url = imageUrl;
+
+    card.appendChild(removeBtn);
+    card.appendChild(img);
+    card.appendChild(hiddenInput);
+    selectedImagesContainer.appendChild(card);
+  }
+
+  function removeImage(imageUrl) {
+    const card = document.querySelector(`[data-url="${imageUrl}"]`);
+    if (card) card.remove();
+  }
+</script>
+{% endblock %}

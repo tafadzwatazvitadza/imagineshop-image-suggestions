@@ -1,27 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>New Images Set</title>
-</head>
-<body>
-    <h1>New Images for {{ product.title }}</h1>
-    <p>Product ID: {{ product.id }}</p>
-    <p>Please select one of these images as the thumbnail:</p>
-    <form action="{{ url_for('set_thumbnail') }}" method="post">
-        <div style="display: flex; flex-wrap: wrap;">
-            {% for img in processed_images %}
-                <div style="margin: 10px; text-align:center;">
-                    <img src="{{ url_for('static', filename='product_images/' + product.title.replace(' ', '_')|lower + '/' + img) }}"
-                         alt="Processed Image"
-                         style="max-width: 200px; max-height: 200px; display:block; margin-bottom:10px;"/>
-                    <input type="radio" name="thumbnail" value="{{ img }}" {% if loop.first %}checked{% endif %}>
-                    <label>Set as Thumbnail</label>
-                </div>
-            {% endfor %}
+{% extends "base.html" %}
+
+{% block title %}
+New Images Set for {{ product.title }}
+{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold text-gray-900 mb-4">New Images for {{ product.title }}</h1>
+<p class="text-sm text-gray-700 mb-4">Product ID: {{ product.id }}</p>
+<p class="text-sm text-gray-700 mb-6">Please select one of these images as the thumbnail:</p>
+
+<form action="{{ url_for('set_thumbnail') }}" method="post" class="space-y-6">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    {% for img in processed_images %}
+      <div class="border border-gray-200 rounded p-4 text-center">
+        <img src="{{ url_for('static', filename='product_images/' + product.title.replace(' ', '_')|lower + '/' + img) }}"
+             alt="Processed Image"
+             class="mx-auto mb-2 max-h-48 object-contain">
+        <div class="flex items-center justify-center space-x-2">
+          <input type="radio" name="thumbnail" value="{{ img }}"
+                 class="rounded text-indigo-600 focus:ring-indigo-500"
+                 {% if loop.first %}checked{% endif %}>
+          <label class="text-sm text-gray-700">Set as Thumbnail</label>
         </div>
-        <button type="submit">Set Thumbnail &amp; Finish</button>
-    </form>
-</body>
-</html>
+      </div>
+    {% endfor %}
+  </div>
+  <button type="submit"
+          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+    Set Thumbnail &amp; Finish
+  </button>
+</form>
+{% endblock %}
