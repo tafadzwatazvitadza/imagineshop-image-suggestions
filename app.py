@@ -233,7 +233,7 @@ def change_images():
     return redirect(url_for("validate_images"))
 
 def search_ecommerce_images(query, output_dir, max_images=10):
-    south_african_stores = ['takealot.com', 'incredible.co.za', 'makro.co.za', 'game.co.za', 'hificorp.co.za', 'firstshop.com']
+    south_african_stores = ['takealot.com', 'incredible.co.za', 'makro.co.za', 'game.co.za', 'hificorp.co.za', 'firstshop.co.za']
     ecommerce_results = {}
 
     for store in south_african_stores:
