@@ -58,7 +58,7 @@ console_handler.setFormatter(console_formatter)
 logger.addHandler(console_handler)
 
 app = Flask(__name__)
-app.secret_key = 'secret_key'
+app.secret_key = 'my_secret_key'
 
 # Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URI')
