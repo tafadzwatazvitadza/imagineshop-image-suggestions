@@ -339,7 +339,11 @@ def index():
     if not current_user():
         return redirect(url_for("login"))
 
-    product_entry = get_product_from_db()
+    try:
+        product_entry = ProductProgress.query.filter_by(status='processing', user_id=current_user()).first()
+    except:
+        product_entry = get_product_from_db()
+
     if not product_entry:
         return render_template("index.html")
 
@@ -485,7 +489,9 @@ def validate_images():
 
 @app.route("/validate", methods=["POST"])
 def validate():
-    product_entry = ProductProgress.query.filter_by(status='processing').first()
+    if not current_user():
+        return redirect(url_for("login"))
+    product_entry = ProductProgress.query.filter_by(status='processing', user_id=current_user()).first()
     if not product_entry:
         return "No product currently in processing state."
 
@@ -533,7 +539,7 @@ def validate():
 
 @app.route("/set-thumbnail", methods=["POST"])
 def set_thumbnail():
-    product_entry = ProductProgress.query.filter_by(status='processing').first()
+    product_entry = ProductProgress.query.filter_by(status='processing', user_id=current_user()).first()
     if not product_entry:
         return "No product currently in processing state."
 
