@@ -340,9 +340,17 @@ def index():
         return redirect(url_for("login"))
 
     try:
+        # First, try to find a product assigned to the current user with status 'processing'
         product_entry = ProductProgress.query.filter_by(status='processing', user_id=current_user()).first()
-    except:
-        product_entry = ProductProgress.query.filter_by(status='processing').first()
+
+        # If no such product exists, fall back to getting any product with status 'processing'
+        if not product_entry:
+            product_entry = ProductProgress.query.filter_by(status='pending').first()
+    except Exception as e:
+        # Handle any unexpected exceptions (e.g., database issues)
+        print(f"An error occurred: {e}")
+        product_entry = None  # Optional: Default behavior if an error occurs
+
 
     if not product_entry:
         return render_template("index.html")
