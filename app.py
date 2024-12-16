@@ -9,6 +9,7 @@ import requests
 import tempfile
 from PIL import Image
 from flask import Flask, render_template, request, redirect, url_for, session
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from icrawler.builtin import GoogleImageCrawler
 from dotenv import load_dotenv
@@ -69,6 +70,7 @@ app.secret_key = 'my_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 class ProductProgress(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -79,9 +81,6 @@ class ProductProgress(db.Model):
     error_message = db.Column(db.String(1024), nullable=True)
     processed_at = db.Column(db.DateTime, nullable=True)
     user_id = db.Column(db.String(50), nullable=True)
-
-with app.app_context():
-    db.create_all()
 
 OUTPUT_DIR = "./static/product_images"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
