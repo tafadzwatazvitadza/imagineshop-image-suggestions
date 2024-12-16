@@ -342,7 +342,7 @@ def index():
     try:
         product_entry = ProductProgress.query.filter_by(status='processing', user_id=current_user()).first()
     except:
-        product_entry = get_product_from_db()
+        product_entry = ProductProgress.query.filter_by(status='processing').first()
 
     if not product_entry:
         return render_template("index.html")
