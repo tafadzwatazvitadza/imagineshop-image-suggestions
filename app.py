@@ -395,6 +395,7 @@ def change_images():
     os.makedirs(product_dir, exist_ok=True)
 
     if decision == "no":
+        product_entry.user_id = current_user()
         product_entry.status = 'skipped'
         product_entry.processed_at = datetime.now(timezone.utc)
         db.session.commit()
