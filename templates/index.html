@@ -5,6 +5,7 @@ All Processed
 {% endblock %}
 
 {% block content %}
+<h1>Welcome, {{ current_user }}</h1>
 <h1 class="text-2xl font-bold text-gray-900 mb-4">All products processed! Thank you.</h1>
 
 <form action="{{ url_for('load_products') }}" method="GET" class="mt-6">
