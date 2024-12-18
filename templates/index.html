@@ -1,17 +1,16 @@
-{% extends "base.html" %}
-
-{% block title %}
-All Processed
-{% endblock %}
-
-{% block content %}
-<h1>Welcome, {{ current_user }}</h1>
-<h1 class="text-2xl font-bold text-gray-900 mb-4">All products processed! Thank you.</h1>
-
-<form action="{{ url_for('load_products') }}" method="GET" class="mt-6">
-  <button type="submit"
-          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-    Load More Products
-  </button>
-</form>
-{% endblock %}
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Manager</title>
+</head>
+<body>
+    <h2>Welcome to Product Manager</h2>
+    <form method="POST" action="{{ url_for('product.load_products') }}">
+        {{ load_products_form.hidden_tag() }}
+        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Load Products</button>
+    </form>
+    <br>
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+</body>
+</html>

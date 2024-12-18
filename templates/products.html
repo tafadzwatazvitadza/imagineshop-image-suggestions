@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}
+Products
+{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-bold">All Products</h1>
+    <!-- Form to Load Products -->
+    <form method="POST" action="{{ url_for('product.load_products') }}">
+        {{ load_products_form.hidden_tag() }}
+        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Load Products</button>
+    </form>
+</div>
+
+<br>
+
+<!-- Table of Products -->
+<table class="min-w-full bg-white">
+    <thead>
+        <tr>
+            <th class="py-2 px-4 border-b">Image</th>
+            <th class="py-2 px-4 border-b">Title</th>
+            <th class="py-2 px-4 border-b">Assigned To</th>
+            <th class="py-2 px-4 border-b">Status</th>
+            <th class="py-2 px-4 border-b">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products.items %}
+        <tr>
+            <td class="py-2 px-4 border-b text-center">
+                {% if product.thumbnail %}
+                    <img height="40" width="40" src="{{ product.thumbnail }}">
+                {% else %}
+                    <div class="flex justify-center items-center">
+                        <span class="text-sm">N/A</span>
+                    </div>
+                {% endif %}
+            </td>
+            <td class="py-2 px-4 border-b">{{ product.title }}</td>
+            <td class="py-2 px-4 border-b">
+                {% if product.user %}
+                    {{ product.user.username }}
+                {% else %}
+                    <span class="text-gray-500">Unassigned</span>
+                {% endif %}
+            </td>
+            <td class="py-2 px-4 border-b">{{ product.status }}</td>
+            <td class="py-2 px-4 border-b">
+                {% if product.status == 'pending' %}
+                <form method="POST" action="{{ url_for('product.process_product', product_id=product.product_id) }}">
+                    {{ process_products_form.hidden_tag() }}
+                    <button type="submit" class="px-3 py-1 bg-blue-500 text-white rounded">Process</button>
+                </form>
+                {% elif product.status == 'processing' %}
+                <form method="POST" action="{{ url_for('product.process_product', product_id=product.product_id) }}">
+                    {{ process_products_form.hidden_tag() }}
+                    <button type="submit" class="px-3 py-1 bg-green-500 text-white rounded">Continue</button>
+                </form>
+                {% else %}
+                <a target="_blank" href="https://www.imagineshop.co.za/za/products/{{ product.handle }}" class="px-3 py-1 bg-green-500 text-white rounded">View Product</a>
+                <span class="text-gray-500">N/A</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Pagination Controls -->
+<div class="mt-4 flex justify-center">
+    {% if products.has_prev %}
+        <a href="{{ url_for('product.list_products', page=products.prev_num) }}"
+           class="px-3 py-1 bg-gray-200 text-gray-700 rounded-l-md hover:bg-gray-300">
+            Previous
+        </a>
+    {% else %}
+        <span class="px-3 py-1 bg-gray-100 text-gray-400 rounded-l-md">Previous</span>
+    {% endif %}
+
+    {% for page_num in products.iter_pages(left_edge=2, right_edge=2, left_current=2, right_current=2) %}
+        {% if page_num %}
+            {% if page_num == products.page %}
+                <span class="px-3 py-1 bg-indigo-600 text-white rounded-md">{{ page_num }}</span>
+            {% else %}
+                <a href="{{ url_for('product.list_products', page=page_num) }}"
+                   class="px-3 py-1 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
+                    {{ page_num }}
+                </a>
+            {% endif %}
+        {% else %}
+            <span class="px-3 py-1 bg-gray-100 text-gray-400 rounded-md">...</span>
+        {% endif %}
+    {% endfor %}
+
+    {% if products.has_next %}
+        <a href="{{ url_for('product.list_products', page=products.next_num) }}"
+           class="px-3 py-1 bg-gray-200 text-gray-700 rounded-r-md hover:bg-gray-300">
+            Next
+        </a>
+    {% else %}
+        <span class="px-3 py-1 bg-gray-100 text-gray-400 rounded-r-md">Next</span>
+    {% endif %}
+</div>
+{% endblock %}
