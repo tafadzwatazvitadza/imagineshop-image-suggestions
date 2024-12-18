@@ -37,23 +37,43 @@
       <main class="flex-1">
         <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            <ul class="py-4">
-              {% for category, message in messages %}
-                <li class="alert alert-{{ category }}">
-                  {{ message|safe }}
-                </li>
-              {% endfor %}
-            </ul>
-          {% endif %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="rounded-md {% if category == 'success' %}bg-green-50{% else %}bg-yellow-50{% endif %} p-4 mb-4" id="flash-message-{{ loop.index }}">
+          <div class="flex">
+            <div class="ml-3">
+              <p class="text-sm font-medium {% if category == 'success' %}text-green-800{% else %}text-yellow-800{% endif %}">
+                {{ message|safe }}
+              </p>
+            </div>
+            <div class="ml-auto pl-3">
+              <div class="-mx-1.5 -my-1.5">
+                <button
+                  type="button"
+                  class="inline-flex rounded-md p-1.5 {% if category == 'success' %}text-green-500{% else %}text-yellow-500{% endif %} focus:outline-none focus:ring-2 focus:ring-offset-2 {% if category == 'success' %}focus:ring-green-600{% else %}focus:ring-yellow-600{% endif %}"
+                  aria-label="Dismiss"
+                  onclick="document.getElementById('flash-message-{{ loop.index }}').remove()"
+                >
+                  <span class="sr-only">Dismiss</span>
+                  <svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
         {% endwith %}
+
 
 
         {% block content %}{% endblock %}
       </main>
 
       <!-- Right Sidebar -->
-      <aside class="sticky top-8 hidden w-96 shrink-0 xl:block">
+      <aside class="sticky top-8 hidden w-48 shrink-0 xl:block">
         {% block right_sidebar %}{% endblock %}
       </aside>
     </div>

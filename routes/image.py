@@ -245,13 +245,19 @@ def handle_post_request(product_dir, product_entry):
             # Handle database update failure
             return redirect(url_for("image.confirm_image_selection", product_id=product_entry.product_id))
 
+        if product_entry.handle:
         # Success message
-        flash(
-            f"Product '{product_entry.title}' has been updated successfully. "
-            f"<br>"
-            f"<a target='_blank' class='text-blue-400' href='https://www.imagineshop.co.za/za/products/{product_entry.handle}'>View In Shop</a>",
-            "success"
-        )
+            flash(
+                f"Product '{product_entry.title}' has been updated successfully. "
+                f"<br>"
+                f"<a target='_blank' class='text-blue-400' href='https://www.imagineshop.co.za/za/products/{product_entry.handle}'>View In Shop</a>",
+                "success"
+            )
+        else:
+            flash(
+                f"Product '{product_entry.title}' has been updated successfully. "
+            )
+
         return redirect(url_for("product.list_products"))
 
     except Exception as e:
