@@ -42,7 +42,7 @@
         <div class="rounded-md {% if category == 'success' %}bg-green-50{% elif category == 'info' %}bg-blue-50{% else %}bg-yellow-50{% endif %} p-4 mb-4" id="flash-message-{{ loop.index }}">
           <div class="flex">
             <div class="ml-3">
-              <p class="text-sm font-medium {% if category == 'success' %}text-green-800{% elif category == 'info' %}text-blue-800{% else %}text-yellow-800{% endif %}">
+              <p class="text-sm font-medium {% if category == 'success' %}text-green-800{% elif category == 'info' %}text-blue-500{% else %}text-yellow-800{% endif %}">
                 {{ message|safe }}
               </p>
             </div>
