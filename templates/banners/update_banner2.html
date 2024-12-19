@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Banner</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold text-center mb-6">Edit Banner</h1>
+        <form action="/admin/banners/{{ banner.id }}/update" method="POST" enctype="multipart/form-data" class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow">
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="title">Title</label>
+                <input type="text" name="title" id="title" class="w-full px-3 py-2 border rounded" value="{{ banner.title }}" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="image">Image</label>
+                {% if banner.image_url %}
+                    <img src="{{ banner.image_url }}" alt="Banner Image" class="w-24 h-12 object-cover mb-2">
+                {% endif %}
+                <input type="file" name="image" id="image" class="w-full px-3 py-2 border rounded">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="collection_path">Collection Path</label>
+                <input type="text" name="collection_path" id="collection_path" class="w-full px-3 py-2 border rounded" value="{{ banner.collection_path }}">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="coupon_code">Coupon Code</label>
+                <input type="text" name="coupon_code" id="coupon_code" class="w-full px-3 py-2 border rounded" value="{{ banner.coupon_code }}">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="expiry_date">Expiry Date</label>
+                <input type="date" name="expiry_date" id="expiry_date" class="w-full px-3 py-2 border rounded" value="{{ banner.expiry_date.strftime('%Y-%m-%d') if banner.expiry_date }}">
+            </div>
+            <div class="text-center">
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Update Banner</button>
+            </div>
+        </form>
+        <div class="text-center mt-4">
+            <a href="/" class="text-blue-500 hover:underline">Back to Banner List</a>
+        </div>
+    </div>
+</body>
+</html>

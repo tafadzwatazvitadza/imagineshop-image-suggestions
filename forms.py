@@ -1,6 +1,7 @@
 # forms.py
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
+from wtforms.fields.datetime import DateField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 from models import User
 
@@ -34,3 +35,11 @@ class ProcessProductsForm(FlaskForm):
 
 class DefaultForm(FlaskForm):
     submit = SubmitField('Submit')
+
+class CreateBannerForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired(), Length(min=1, max=100)])
+    image = StringField('Banner Artwork', validators=[])
+    collection_path = StringField('Collection Path', validators=[DataRequired(), Length(min=1, max=100)])
+    coupon_code = StringField('Coupon Code', validators=[Length(min=0, max=50)])
+    expiry_date = DateField('Expiry Date', validators=[])
+    submit = SubmitField('Save Changes')

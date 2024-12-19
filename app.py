@@ -1,4 +1,5 @@
 from flask import Flask, render_template
+from flask_cors import CORS
 from flask_login import LoginManager
 from flask_migrate import Migrate
 
@@ -10,6 +11,7 @@ migrate = Migrate()
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
     app.config.from_object(Config)
 
     # Initialize database
@@ -32,10 +34,12 @@ def create_app():
     from routes.auth import auth_bp
     from routes.product import product_bp
     from routes.image import image_bp
+    from routes.banners import banners_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(product_bp)
     app.register_blueprint(image_bp)
+    app.register_blueprint(banners_bp)
 
     # Error Handlers
     @app.errorhandler(404)

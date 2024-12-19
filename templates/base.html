@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>{% block title %}Validate Images{% endblock %}</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   {% block head_scripts %}{% endblock %}
 </head>
 <body class="bg-gray-50">
@@ -29,6 +30,7 @@
         <h2 class="text-lg font-semibold text-gray-900">Menu</h2>
         <ul class="mt-4 space-y-2 text-sm text-indigo-600">
           <li><a href="/" class="hover:underline">All Products</a></li>
+          <li><a href="{{ url_for('banners.view_all_banners') }}" class="hover:underline">Banners</a></li>
         </ul>
         {% block sidebar %}{% endblock %}
       </aside>
