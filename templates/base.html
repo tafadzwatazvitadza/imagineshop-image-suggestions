@@ -39,10 +39,10 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       {% for category, message in messages %}
-        <div class="rounded-md {% if category == 'success' %}bg-green-50{% else %}bg-yellow-50{% endif %} p-4 mb-4" id="flash-message-{{ loop.index }}">
+        <div class="rounded-md {% if category == 'success' %}bg-green-50{% elif category == 'info' %}bg-blue-50{% else %}bg-yellow-50{% endif %} p-4 mb-4" id="flash-message-{{ loop.index }}">
           <div class="flex">
             <div class="ml-3">
-              <p class="text-sm font-medium {% if category == 'success' %}text-green-800{% else %}text-yellow-800{% endif %}">
+              <p class="text-sm font-medium {% if category == 'success' %}text-green-800{% elif category == 'info' %}text-blue-800{% else %}text-yellow-800{% endif %}">
                 {{ message|safe }}
               </p>
             </div>
@@ -50,7 +50,7 @@
               <div class="-mx-1.5 -my-1.5">
                 <button
                   type="button"
-                  class="inline-flex rounded-md p-1.5 {% if category == 'success' %}text-green-500{% else %}text-yellow-500{% endif %} focus:outline-none focus:ring-2 focus:ring-offset-2 {% if category == 'success' %}focus:ring-green-600{% else %}focus:ring-yellow-600{% endif %}"
+                  class="inline-flex rounded-md p-1.5 {% if category == 'success' %}text-green-500{% elif category == 'info' %}text-blue-500{% else %}text-yellow-500{% endif %} focus:outline-none focus:ring-2 focus:ring-offset-2 {% if category == 'success' %}focus:ring-green-600{% elif category == 'info' %}focus:ring-blue-600{% else %}focus:ring-yellow-600{% endif %}"
                   aria-label="Dismiss"
                   onclick="document.getElementById('flash-message-{{ loop.index }}').remove()"
                 >
