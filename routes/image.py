@@ -117,7 +117,8 @@ def validate_images(product_id):
         google_images=google_images,
         ecommerce_images=ecommerce_images,
         existing_images=existing_images,
-        form=default_form
+        form=default_form,
+        show_right_sidebar=True
     )
 
 @image_bp.route("/confirm-image-selection/<string:product_id>", methods=["POST", "GET"])
