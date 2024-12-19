@@ -255,7 +255,8 @@ def handle_post_request(product_dir, product_entry):
             )
         else:
             flash(
-                f"Product '{product_entry.title}' has been updated successfully. "
+                f"Product '{product_entry.title}' has been updated successfully.",
+                "success"
             )
 
         return redirect(url_for("product.list_products"))
