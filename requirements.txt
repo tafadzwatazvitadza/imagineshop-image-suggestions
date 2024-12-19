@@ -49,3 +49,9 @@ urllib3==2.2.3
 vine==5.1.0
 wcwidth==0.2.13
 redis
+Flask-Cors==5.0.0
+greenlet==3.1.1
+packaging==24.2
+playwright==1.49.1
+pyee==12.0.0
+setuptools==75.6.0
