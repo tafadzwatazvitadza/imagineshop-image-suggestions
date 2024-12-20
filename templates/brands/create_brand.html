@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}
+Create Brand
+{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-bold">Create Brand</h1>
+    <a href="{{ url_for('brands.view_all_brands') }}" class="hover:underline text-nowrap">
+        Brands List
+    </a>
+</div>
+<br>
+    <div class="container mx-auto p-6">
+        <form action="{{ url_for('brands.create_brand') }}" method="POST" enctype="multipart/form-data" class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow">
+            {{ create_brand_form.hidden_tag() }}
+            <div class="mb-4">
+                {{ create_brand_form.name.label(class="block text-gray-700 text-sm font-bold mb-2") }}
+                {{ create_brand_form.name(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
+                {% for error in create_brand_form.name.errors %}
+                    <span class="text-red-500 text-xs">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="logo">Logo</label>
+                <input type="file" name="logo" id="logo" class="w-full px-3 py-2 border rounded">
+                {% for error in create_brand_form.logo.errors %}
+                    <span class="text-red-500 text-xs">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="mt-8 flex items-center justify-end">
+                {{ create_brand_form.submit(class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline") }}
+            </div>
+        </form>
+    </div>
+{% endblock %}

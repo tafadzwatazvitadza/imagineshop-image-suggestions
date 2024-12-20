@@ -35,11 +35,13 @@ def create_app():
     from routes.product import product_bp
     from routes.image import image_bp
     from routes.banners import banners_bp
+    from routes.brands import brands_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(product_bp)
     app.register_blueprint(image_bp)
     app.register_blueprint(banners_bp)
+    app.register_blueprint(brands_bp)
 
     # Error Handlers
     @app.errorhandler(404)

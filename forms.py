@@ -42,4 +42,10 @@ class CreateBannerForm(FlaskForm):
     collection_path = StringField('Collection Path', validators=[DataRequired(), Length(min=1, max=100)])
     coupon_code = StringField('Coupon Code', validators=[Length(min=0, max=50)])
     expiry_date = DateField('Expiry Date', validators=[])
-    submit = SubmitField('Save Changes')
+    submit = SubmitField('Save Banner')
+
+
+class CreateBrandForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired(), Length(min=1, max=100)])
+    logo = StringField('Logo', validators=[DataRequired()])
+    submit = SubmitField('Save Brand')

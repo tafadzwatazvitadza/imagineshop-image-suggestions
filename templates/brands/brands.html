@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}
+Brands
+{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-bold">All brands</h1>
+    <!-- Form to Load Products -->
+    <a href="{{ url_for('brands.create_brand') }}" class="px-4 py-2 bg-blue-500 text-white rounded">
+        Create brand
+    </a>
+</div>
+<br>
+
+<div class="mx-auto max-w-7xl px-6 lg:px-8">
+<div class="-mx-6 grid grid-cols-2 gap-0.5 overflow-hidden sm:mx-0 sm:rounded-2xl md:grid-cols-3">
+    {% for brand in brands %}
+    <div class="bg-gray-400/5 p-8 sm:p-10 text-center flex flex-col justify-between">
+        <div>
+            {% if brand.logo %}
+            <img class="max-h-12 mx-auto object-contain" src="{{ brand.logo }}" alt="Transistor" width="158">
+            {% endif %}
+        </div>
+        <div class="mt-2 text-md">{{ brand.name }}</div>
+    </div>
+    {% endfor %}
+</div>
+</div>
+{% endblock %}
