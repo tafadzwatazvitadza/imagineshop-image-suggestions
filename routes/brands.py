@@ -65,6 +65,8 @@ def view_all_brands():
         flash(f"Error fetching brands: {e}", "danger")
         brands = []
 
+    print(brands)
+
     return render_template('brands/brands.html', brands=brands)
 
 # Route to create a new brand
