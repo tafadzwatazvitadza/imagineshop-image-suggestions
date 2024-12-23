@@ -17,7 +17,7 @@
           <img class="h-8 w-auto" src="https://www.imagineshop.co.za/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fimagine-logo-color.0202c19b.png&w=256&q=75" alt="Imagine Shop">
         </a>
         <div class="flex items-center gap-x-8">
-          <span>{{ current_user.email }}</span>
+          <span class="hidden sm:inline">{{ current_user.email }}</span>
           <a href="{{ url_for('auth.logout') }}">Logout</a>
         </div>
       </div>
