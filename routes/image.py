@@ -377,6 +377,7 @@ def mark_product_as_done(product_entry):
     """
     product_entry.status = 'done'
     product_entry.processed_at = datetime.now(timezone.utc)
+    product_entry.completed_at = datetime.now(timezone.utc)
     try:
         db.session.commit()
         logger.debug(f"Marked product {product_entry.product_id} as done.")

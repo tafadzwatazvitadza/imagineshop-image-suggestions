@@ -1,12 +1,20 @@
 # routes/product.py
-from flask import Blueprint, render_template, redirect, url_for, request, flash
-from sqlalchemy import case, and_
 
-from forms import LoadProductsForm
-from models import db, ProductProgress
+from flask import Blueprint, flash
+
+from routes.auth import admin_required
 from tasks import process_product_images
 from utils import fetch_shop_products
+
+product_bp = Blueprint('product', __name__)
+
+
+
+from flask import Blueprint, render_template, redirect, url_for, request
 from flask_login import current_user, login_required
+from sqlalchemy import case, and_, or_
+from forms import LoadProductsForm
+from models import db, ProductProgress
 
 product_bp = Blueprint('product', __name__)
 
@@ -24,21 +32,54 @@ def list_products():
     page = request.args.get('page', 1, type=int)
     per_page = 10
 
-    # Define priority using SQLAlchemy's case
-    priority = case(
-        (ProductProgress.user_id == user.id, 1),  # Products assigned to me
-        (ProductProgress.status == 'processing', 2),  # Then processing
-        ((ProductProgress.status == 'pending') & (ProductProgress.user_id == None), 3),  # Then pending, unassigned
-        ((ProductProgress.status == 'processing') & (ProductProgress.user_id != user.id), 4),
-        # Then processing by others
-    )
-
-    products = ProductProgress.query.filter(
+    # Base query: exclude 'done' and 'skipped'
+    base_query = ProductProgress.query.filter(
         and_(
             ProductProgress.status != 'done',
             ProductProgress.status != 'skipped'
         )
-    ).order_by(priority).paginate(page=page, per_page=per_page, error_out=False)
+    )
+
+    # Distinguish Admin vs. Worker
+    if user.role.lower() == 'admin':
+        # Admin sees all in base query
+        products_query = base_query
+
+        # Priority for Admin:
+        # 1. assigned to me
+        # 2. processing
+        # 3. pending/unassigned
+        # 4. processing but assigned to others (optional)
+        priority = case(
+            (ProductProgress.user_id == user.id, 1),
+            (ProductProgress.status == 'processing', 2),
+            ((ProductProgress.status == 'pending') & (ProductProgress.user_id == None), 3),
+            ((ProductProgress.status == 'processing') & (ProductProgress.user_id != user.id), 4),
+        )
+
+    else:
+        # Worker sees tasks assigned to them OR unassigned
+        products_query = base_query.filter(
+            or_(
+                ProductProgress.user_id == user.id,
+                ProductProgress.user_id.is_(None)
+            )
+        )
+
+        # Priority for Worker:
+        # 1. assigned to me
+        # 2. pending/unassigned
+        priority = case(
+            (ProductProgress.user_id == user.id, 1),
+            ((ProductProgress.status == 'pending') & (ProductProgress.user_id == None), 2),
+        )
+
+    # Order by priority and paginate
+    products = products_query.order_by(priority).paginate(
+        page=page,
+        per_page=per_page,
+        error_out=False
+    )
 
     return render_template(
         "products.html",
@@ -46,6 +87,43 @@ def list_products():
         load_products_form=load_products_form,
         process_products_form=process_products_form,
     )
+
+
+# @product_bp.route("/")
+# @login_required
+# def list_products():
+#     user = current_user
+#     load_products_form = LoadProductsForm()
+#     process_products_form = LoadProductsForm()
+#
+#     if not user.is_authenticated:
+#         return redirect(url_for("auth.login"))
+#
+#     page = request.args.get('page', 1, type=int)
+#     per_page = 10
+#
+#     # Define priority using SQLAlchemy's case
+#     priority = case(
+#         (ProductProgress.user_id == user.id, 1),  # Products assigned to me
+#         (ProductProgress.status == 'processing', 2),  # Then processing
+#         ((ProductProgress.status == 'pending') & (ProductProgress.user_id == None), 3),  # Then pending, unassigned
+#         ((ProductProgress.status == 'processing') & (ProductProgress.user_id != user.id), 4),
+#         # Then processing by others
+#     )
+#
+#     products = ProductProgress.query.filter(
+#         and_(
+#             ProductProgress.status != 'done',
+#             ProductProgress.status != 'skipped'
+#         )
+#     ).order_by(priority).paginate(page=page, per_page=per_page, error_out=False)
+#
+#     return render_template(
+#         "products.html",
+#         products=products,
+#         load_products_form=load_products_form,
+#         process_products_form=process_products_form,
+#     )
 
 
 
@@ -95,3 +173,11 @@ def process_product(product_id):
     flash(f"Started processing product '{product_entry.title}'.", "info")
     return redirect(url_for("image.validate_images", product_id=product_id))
 
+
+
+@product_bp.route("/admin_dashboard")
+@admin_required
+def admin_dashboard():
+    # Only admins can see this dashboard
+    # ...
+    return render_template("admin_dashboard.html")

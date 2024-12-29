@@ -3,6 +3,9 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required
 from models import db, User
 from forms import LoginForm, RegistrationForm
+from functools import wraps
+from flask import redirect, url_for, flash
+from flask_login import current_user
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -45,3 +48,19 @@ def logout():
     logout_user()
     flash('You have been logged out.', 'info')
     return redirect(url_for('auth.login'))
+
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            # Force login if user is not authenticated at all
+            flash("Please log in first.", "warning")
+            return redirect(url_for('auth.login'))
+
+        if not current_user.is_admin():
+            # Only admins are allowed
+            flash("Admin access required.", "error")
+            return redirect(url_for('product.list_products'))
+        return f(*args, **kwargs)
+    return decorated_function

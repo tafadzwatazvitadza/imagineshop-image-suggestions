@@ -18,6 +18,9 @@ class ProductProgress(db.Model):
     status = db.Column(db.String(50), default='pending', index=True)  # 'pending', 'processing', 'done', etc.
     processed_at = db.Column(db.DateTime, nullable=True)
 
+    # New field to mark the time it was completed
+    completed_at = db.Column(db.DateTime, nullable=True)
+
     # Foreign key linking to the User table
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
 
@@ -32,6 +35,8 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(150), nullable=False, unique=True)
     email = db.Column(db.String(150), nullable=False, unique=True)
     password_hash = db.Column(db.String(200), nullable=False)
+
+    role = db.Column(db.String(50), default='worker', nullable=False)
 
     # Define the reverse relationship
     products = relationship('ProductProgress', back_populates='user')
@@ -51,6 +56,10 @@ class User(db.Model, UserMixin):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    # Helper method to check user role
+    def is_admin(self):
+        return self.role.lower() == 'admin'
 
     def __repr__(self):
         return f"<User {self.username}>"
