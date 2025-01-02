@@ -156,9 +156,13 @@ def update_medusa_product_images(product_id, image_urls, admin_token):
             raise ValueError("No images provided in the image URLs list.")
         thumbnail_url = image_urls[0]['url']
 
+
+    # TODO: only set status to published when the admin has approved the product
+
     data = {
         "thumbnail": thumbnail_url,
-        "images": image_urls
+        "images": image_urls,
+        "status": "published"
     }
     url = f"{Config.MEDUSA_ADMIN_URL}/admin/products/{product_id}"
 
