@@ -1,10 +1,11 @@
 # routes/product.py
-
+import requests
 from flask import Blueprint, flash
 
 from routes.auth import admin_required
 from tasks import process_product_images
-from utils import fetch_shop_products
+from utils import fetch_shop_products, get_jwt_token
+from app_config import Config
 
 product_bp = Blueprint('product', __name__)
 
@@ -125,6 +126,23 @@ def list_products():
 #         process_products_form=process_products_form,
 #     )
 
+# Helper to get Medusa token
+def get_medusa_token():
+    auth_url = f"{Config.MEDUSA_ADMIN_URL}/auth/user/emailpass"
+    auth_body = {
+        "email": Config.ADMIN_EMAIL,
+        "password": Config.ADMIN_PASSWORD
+    }
+    try:
+        auth_response = requests.post(auth_url, json=auth_body)
+        auth_response.raise_for_status()
+        token = auth_response.json().get("token")
+        if not token:
+            raise Exception("Authentication token not found in response.")
+        return token
+    except requests.exceptions.RequestException as e:
+        raise Exception(f"Failed to authenticate with Medusa: {e}")
+
 
 
 @product_bp.route("/load_products", methods=["POST"])
@@ -132,7 +150,24 @@ def load_products():
     if not current_user:
         return redirect(url_for("auth.login"))
 
-    products = fetch_shop_products()
+    try:
+        # Get Medusa token
+        token = get_medusa_token()
+
+        # Fetch products with 'proposed' status and limit to 50
+        headers = {
+            "Authorization": f"Bearer {token}"
+        }
+        response = requests.get(
+            f"{Config.MEDUSA_ADMIN_URL}/admin/products?status[]=proposed",
+            headers=headers
+        )
+        response.raise_for_status()
+        products = response.json().get('products', [])
+    except Exception as e:
+        flash(f"Error fetching products: {e}", "danger")
+        products = []
+
     new_entries = []
     for prod in products:
         product_id = prod.get("id")
@@ -141,7 +176,14 @@ def load_products():
         thumbnail = prod.get("thumbnail", "unknown")
         description = prod.get("description", "unknown")
         if not ProductProgress.query.filter_by(product_id=product_id).first():
-            new_entries.append(ProductProgress(product_id=product_id, title=title, handle=handle, thumbnail=thumbnail, description=description, status='pending'))
+            new_entries.append(ProductProgress(
+                product_id=product_id,
+                title=title,
+                handle=handle,
+                thumbnail=thumbnail,
+                description=description,
+                status='pending'
+            ))
     if new_entries:
         db.session.bulk_save_objects(new_entries)
         db.session.commit()
@@ -149,6 +191,7 @@ def load_products():
     else:
         flash("No new products found.", "info")
     return redirect(url_for("product.list_products"))
+
 
 
 @product_bp.route("/process/<string:product_id>", methods=["POST"])
