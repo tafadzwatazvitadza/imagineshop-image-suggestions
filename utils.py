@@ -36,13 +36,17 @@ s3_client = boto3.client(
 )
 
 def fetch_shop_products():
-    headers = {"x-publishable-api-key": Config.PUBLISHABLE_KEY}
+    admin_token = get_jwt_token(Config.ADMIN_EMAIL, Config.ADMIN_PASSWORD)
+    headers = {
+        "Authorization": f"Bearer {admin_token}",
+        "Content-Type": "application/json"
+    }
     products = []
     offset = 0
     limit = 50
 
     while True:
-        url = f"{Config.MEDUSA_API_URL}?offset={offset}&limit={limit}"
+        url = f"{Config.MEDUSA_ADMIN_URL}/admin/products?offset={offset}&limit={limit}&status[]=proposed"
         try:
             response = requests.get(url, headers=headers)
             response.raise_for_status()
