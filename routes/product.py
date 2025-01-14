@@ -4,7 +4,7 @@ from flask import Blueprint, flash
 
 from routes.auth import admin_required
 from tasks import process_product_images
-from utils import fetch_shop_products, get_jwt_token
+from utils import fetch_shop_products, get_jwt_token, logger
 from app_config import Config
 
 product_bp = Blueprint('product', __name__)
@@ -152,18 +152,32 @@ def load_products():
 
     try:
         # Get Medusa token
-        token = get_medusa_token()
+        admin_token = get_jwt_token(Config.ADMIN_EMAIL, Config.ADMIN_PASSWORD)
 
         # Fetch products with 'proposed' status and limit to 50
         headers = {
-            "Authorization": f"Bearer {token}"
+            "Authorization": f"Bearer {admin_token}",
+            "Content-Type": "application/json"
         }
-        response = requests.get(
-            f"{Config.MEDUSA_ADMIN_URL}/admin/products?status[]=proposed",
-            headers=headers
-        )
-        response.raise_for_status()
-        products = response.json().get('products', [])
+
+        products = []
+        offset = 0
+        limit = 50
+
+        while True:
+            url = f"{Config.MEDUSA_ADMIN_URL}/admin/products?offset={offset}&limit={limit}&status[]=proposed"
+            try:
+                response = requests.get(url, headers=headers)
+                response.raise_for_status()
+                batch = response.json().get("products", [])
+                if not batch:
+                    break
+                products.extend(batch)
+                offset += limit
+            except requests.RequestException as e:
+                logger.error(f"Error fetching products: {e}")
+                break
+
     except Exception as e:
         flash(f"Error fetching products: {e}", "danger")
         products = []
